@@ -2,26 +2,46 @@
 
 <head>
   <style>
-    body {
-      background-color:ivory;
-    }
+    *, *::before,*::after {
+        box-sizing: border-box;
+        margin: 0;
+        padding:0;
+        }
 
-    div {
-      background-color:silver;
-      height: 30%;
-      width: auto;
-    }
+        body {
+            background-color: #f4f6f8;
+            color: #1a2a35;
+            font-size: 16px; 
+            font-family: 'Times New Roman', Times, serif;
+        }
 
-    #header {
-    background-color: navy;
-    color: white;
-    padding: 20px 40px;
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-}
+        #topbar {
+            background-color: #003F62;
+            color: rgba(255,255,255,0.75); 
+            font-size: 0.78rem; 
+            padding: 6px 0; 
+        } 
+
+        #hoofdnavigatie {
+            background-color: #005b8c;
+            box-shadow: 0 2px 8px rgba(0, 0,0, 0.18);
+            position: sticky;
+            top: 0;
+            z-index: 100;
+        }
+
+        .header-inner {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 0 24px;
+            display: flex; 
+            align-items: center;
+            justify-content: space-between;
+            height: 72px;
+        }
 
   </style>
+  
 </head>
 
 <body>

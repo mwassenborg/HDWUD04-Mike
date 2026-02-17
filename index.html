@@ -22,12 +22,26 @@
             padding: 6px 0; 
         } 
 
+        .topbar-inner { 
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 0;
+            display: flex; 
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        #topbar-rechts { 
+            display: flex; 
+            gap: 20px;
+        }
+
         #hoofdnavigatie {
             background-color: #005b8c;
             box-shadow: 0 2px 8px rgba(0, 0,0, 0.18);
             position: sticky;
             top: 0;
-            z-index: 100;
+            z-index: 1000;
         }
 
         .header-inner {
@@ -39,18 +53,107 @@
             justify-content: space-between;
             height: 72px;
         }
+        
+        .logo-wrap { 
+            display: flex; 
+            align-items: center; 
+            gap: 14px;
+            text-decoration: none; 
+        }
+
+        .logo-icoon {
+            width: 48px; 
+            height: 48px; 
+            background: #fff; 
+            border-radius: 6px;
+            display: flex; 
+            align-items: center; 
+            justify-content: center;
+        }
+
+       .logo-icoon svg {
+            width: 36px; 
+            height: 36px; 
+        }
+
+        .logo-tekst h1 {
+            color: #fff; 
+            font-size: 1.15rem; 
+            font-weight: 600; 
+            line-height: 1.2;
+        }
+
+        .logo-tekst span {
+            color: rgba(255,255,255,0.7); 
+            font-size: 0.72rem; 
+            letter-spacing: 0.5px; 
+            text-transform: uppercase; 
+        }
+
+        .hoofdmenu { 
+            display: flex; 
+            gap: 4px; 
+        }
+
+        .hoofdmenu a {
+            color: rgba(255,255,255,0.85); 
+            text-decoration: none;
+            padding: 8px 14px; 
+            border-radius: 4px;
+            font-size: 0.88rem; 
+            font-weight: 600;
+        }
+
+        #alarmbanner { 
+            background-color: #e67e22;
+            color: #fff;
+            padding: 14px 24px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 12px;
+            font-weight: 700;
+            font-size: 0.95rem;
+            animation: Knipperachtergrond 2.5 ease-in-out infinite;
+        }
+
+        @keyframes Knipperachtergrond { 
+            0%, 100% { background-color: #e67e22;}
+            50% { background-color: #d35400;} 
+        }
+
+        #alarmbanner-a { 
+            color: #fff; 
+            text-decoration: underline;
+        }
 
   </style>
-  
 </head>
 
 <body>
-  <div-id: header>
-    <h1> Early Warning Hekerbeekdal </h1>
-  <div>
-    <h1>
-        Test
-    </h1>
-     <p> Test test</p>
+  <div id="topbar">
+  <div class="topbar-inner">
+    <span>Waterschap Limburg</span>
+    <div class="topbar-rechts">
+      <!-- Pagina later toevoegen -->
+      <!-- <a href="#">Toegankelijkheid</a> -->
+      <!-- <a href="#">Contact</a> -->
+      </div>
   </div>
+</div>
+
+<header id="hoofdnavigatie">
+  <div class="header-inner">
+    <a href="#" class="logo-wrap"> <!--Logo toevoegen-->
+      <div class="logo-icoon">...</div>
+      <div class="logo-tekst">
+        <h1>Hekerbeekdal Waakzaamheid</h1>
+        <span>Waterschap Limburg Early Warning Systeem</span>
+      </div>
+
+
+
+
+
+
 </body>

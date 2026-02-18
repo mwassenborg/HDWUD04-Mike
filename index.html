@@ -1,234 +1,57 @@
 <!doctype html>
 
 <head>
-  <style>
-    *, *::before,*::after {
-        box-sizing: border-box;
-        margin: 0;
-        padding:0;
-        }
-
-        body {
-            background-color: #f4f6f8;
-            color: #1a2a35;
-            font-size: 16px; 
-            font-family: 'Times New Roman', Times, serif;
-        }
-
-        #topbar {
-            background-color: #003F62;
-            color: rgba(255,255,255,0.75); 
-            font-size: 0.78rem; 
-            padding: 6px 0; 
-        } 
-
-        .topbar-inner { 
-            max-width: 1200px;
-            margin: 0 auto;
-            padding: 0;
-            display: flex; 
-            justify-content: space-between;
-            align-items: center;
-        }
-
-        #topbar-rechts { 
-            display: flex; 
-            gap: 20px;
-        }
-
-        #hoofdnavigatie {
-            background-color: #005b8c;
-            box-shadow: 0 2px 8px rgba(0, 0,0, 0.18);
-            position: sticky;
-            top: 0;
-            z-index: 1000;
-        }
-
-        .header-inner {
-            max-width: 1200px;
-            margin: 0 auto;
-            padding: 0 24px;
-            display:flex; 
-            align-items: center;
-            justify-content: space-between;
-            height: 72px;
-        }
-        
-        .logo-wrap { 
-            display: flex; 
-            align-items: center; 
-            gap: 14px;
-            text-decoration: none; 
-        }
-
-        .logo-icoon {
-            width: 48px; 
-            height: 48px; 
-            background: #fff; 
-            border-radius: 6px;
-            display: flex; 
-            align-items: center; 
-            justify-content: center;
-        }
-
-       .logo-icoon svg {
-            width: 36px; 
-            height: 36px; 
-        }
-
-        .logo-tekst h1 {
-            color: #fff; 
-            font-size: 1.15rem; 
-            font-weight: 600; 
-            line-height: 1.2;
-        }
-
-        .logo-tekst span {
-            color: rgba(255,255,255,0.7); 
-            font-size: 0.72rem; 
-            letter-spacing: 0.5px; 
-            text-transform: uppercase; 
-        }
-
-        .hoofdmenu { 
-            display: flex; 
-            gap: 4px; 
-        }
-
-        .hoofdmenu a {
-            color: rgba(255,255,255,0.85); 
-            text-decoration: none;
-            padding: 8px 14px; 
-            border-radius: 4px;
-            font-size: 0.88rem; 
-            font-weight: 600;
-        }
-
-        #alarmbanner { 
-            background-color: #e67e22;
-            color: #fff;
-            padding: 14px 24px;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            gap: 12px;
-            font-weight: 700;
-            font-size: 0.95rem;
-            animation: Knipperachtergrond 2.5 ease-in-out infinite;
-        }
-
-        @keyframes Knipperachtergrond { 
-            0%, 100% { background-color: #e67e22;}
-            50% { background-color: #d35400;} 
-        }
-
-        #alarmbanner-a { 
-            color: #fff; 
-            text-decoration: underline;
-        }
-
-        #hero {
-          background: linear-gradient(135deg,#003F62 0%, #006fa8 60%, #1a8fb8 100%);
-          color: #fff; 
-          padding: 56px 24px 48px;
-          position: relative;
-          overflow: hidden;
-        }
-        
-        .hero-inner {
-          max-width: 1200px;
-          margin: 0 auto;
-          position: relative;
-          z-index: 1;
-        }
-
-        .hero-label {
-          display: inline-block;
-          background-color: rgba(0, 0,0, 0.18);
-          border: 1px solid rgba(255,255,255,0.35);
-          border-radius: 20px;
-          padding: 4px 14px;
-          font-size: 0.75rem;
-          font-weight: 700;
-          letter-spacing: 1px;
-          text-transform: uppercase;
-          margin-bottom: 16px;
-        }
-
-        #hero h2 {
-        font-size: 2.6rem;
-        font-weight: 700;
-        margin-bottom: 12px;
-        max-width: 680px;
-        }
-
-        #hero p{
-          font-size: 1.05rem;
-          color: rgba(255,255,255,0.75);
-          max-width: 600px;
-          margin-bottom: 28px;
-        }
-        
-        .hero-meta{
-          display: flex;
-          gap: 24px;
-          font-family: 0.82rem;
-          color: rgba(255,255,255,0.6);
-          flex-wrap: wrap;
-        }
-
-        .hero-meta span { 
-          display: flex; 
-          align-items: center;
-          gap: 6px;
-        }
-        <!-- Note to self, Ik moet echt een css stijlbestand maken dit wordt te groot -->
-
-  </style>
+  <link rel="stylesheet" href="./CSS/stylesheet.css">
 </head>
 
 <body>
-  <div id="topbar">
-   <div class="topbar-inner">
-    <span>Waterschap Limburg</span>
-      <div class="topbar-rechts">
-      <!-- Pagina later toevoegen -->
-      <!-- <a href="#">over ons</a> -->
-      <!-- <a href="#">Contact</a> -->
+  <div id="top-container">
+    <div id="topbar">
+      <div class="topbar-inner">
+        <span>Waterschap Limburg</span>
+        <div class="topbar-rechts">
+          <!-- Pagina later toevoegen -->
+          <!-- <a href="#">over ons</a> -->
+          <!-- <a href="#">Contact</a> -->
+        </div>
+      </div>
+    </div>
+
+    <header id="hoofdnavigatie">
+      <div class="header-inner">
+        <a href="#" class="logo-wrap"> </a>
+        <div class="logo-icoon">...</div> <!--Logo toevoegen -->
+        <div class="logo-tekst">
+          <h1>Hekerbeekdal</h1>
+          <span>Waterschap Limburg Early Warning Systeem</span>
+        </div>
+    </header>
+
+    <div id="alarmbanner">
+      <span><strong>Waarschuwing - Hevige neerslag</strong> Verwacht op 20 februari 2026, 20:44 </span>
+    </div>
+
+    <div id="hero">
+      <div class="hero-inner">
+        <div class="hero-label">Live monitoring hekerbeekdal</div>
+        <h2> Early Warning Systeem <br> Hekerbeekdal </h2>
+        <p> Realtime inzichten in neerslagintensiteit en risicogebeiden van het hekeberbeekdal. </p>
+        <div class="hero-meta">
+          <span> Deelstroomgebied hekerbeekdal, Zuid-limburg</span>
+          <span> Laatse update: <span id="hero-update"> 18 feb 2026, 9.00 </span></span>
+          <span><span class="live-stip"></span> Verversing elke 6 uur.</span>
+        </div>
       </div>
     </div>
   </div>
-
-  <header id="hoofdnavigatie">
-    <div class="header-inner">
-      <a href="#" class="logo-wrap"> </a>
-      <div class="logo-icoon">...</div> <!--Logo toevoegen -->
-      <div class="logo-tekst">
-        <h1>Hekerbeekdal</h1>
-        <span>Waterschap Limburg Early Warning Systeem</span>
-    </div>
-  </header>
-
-<div id="alarmbanner"> 
-  <span><strong>Waarschuwing - Hevige neerslag</strong> Verwacht op 20 februari 2026, 20:44 </span>
-</div>
-  
-<div id="hero">
-  <div class="hero-inner"> 
-    <div class="hero-label">Live monitoring hekerbeekdal</div>
-      <h2> Early Warning Systeem <br> Hekerbeekdal </h2>
-      <p> Realtime inzichten in neerslagintensiteit en risicogebeiden van het hekeberbeekdal. </p>
-      <div class="hero-meta"> 
-        <span> Deelstroomgebied hekerbeekdal, Zuid-limburg</span>
-        <span> Laatse update: <span id="hero-update"> 18 feb 2026, 9.00 </span></span>
-        <span><span class="live-stip"></span> Verversing elke 6 uur.</span>
-      </div>
-    </div>
+  <!--Onder hero leaflet toevoegen met hekerbeekdal en harmonie API-->
+  <div id="content"> 
+     <!--grid van maken met 3 divs voor info blokken  -->
+    <div></div>
   </div>
-</div>
-
-<!--Onder hero leaflet toevoegen met hekerbeekdal en harmonie API-->
-
+  <div id="footer">
+    <!--  4 colomun met flex : 4 divs class-->
+  </div>
 
 
 

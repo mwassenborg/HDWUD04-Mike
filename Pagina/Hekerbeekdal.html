@@ -1,0 +1,110 @@
+<!DOCTYPE html>
+
+<Head>
+<link rel="stylesheet" href="./CSS/stylesheet.css">
+ <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css"
+     integrity="sha256-p4NxAoJBhIIN+hmNHrzRCf9tD/miZyoHS5obTRR9BMY="
+     crossorigin=""/>
+      <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"
+         integrity="sha256-20nQCchB9co0qIjJZRGuk2/Z9VM+kNiyxNV1lvTlZBo="
+         crossorigin=""></script>
+         <script src="https://kit.fontawesome.com/e766bcebc4.js" crossorigin="anonymous"></script>
+             <style>
+                #map {
+                height:60vw;
+                }          
+    </style> 
+
+</Head>
+
+<body>
+  <div id="top-container">
+    <div id="topbar">
+      <div class="topbar-inner">
+        <span>Waterschap Limburg</span>
+        <div class="topbar-rechts">
+       
+        </div>
+      </div>
+    </div>
+     <div id="header">
+  <h2>GeoJSON inladen</h2>
+  </div>
+
+  <div id="map"></div>
+    <script>
+
+        const osm = L.tileLayer('https://{s}.tile.osm.org/{z}/{x}/{y}.png')
+
+        const map = L.map('map', {
+            center: [50.87425546858122, 5.857151285045644],
+            zoom: 14,
+          layers: [osm]
+        });
+        
+
+    function refreshRadar() {
+    map.removeLayer(radarLayer);
+    radarLayer = L.tileLayer.wms(
+        'https://anonymous.api.dataplatform.knmi.nl/wms/adaguc-server?_ts=' + Date.now(), {
+        layers:      'RAD_NL25_PCP_CM',
+        DATASET:     'radar_5min_reflectivity_composites_realtime',
+        format:      'image/png',
+        transparent: true,
+        version:     '1.3.0',
+        opacity:     0.7
+        }
+    ).addTo(map);
+    }
+
+setInterval(refreshRadar, 60000);
+   
+        const fontAwesomeIcon = L.divIcon({
+            html: '<i class="fa-solid fa-location-dot"></i>',
+            iconSize: [1, 1],
+            className: 'fontawesome_icon'
+        });
+
+        let geojson_marker = {
+            "crs": {
+                "properties": {
+                    "name": "urn:ogc:def:crs:OGC:1.3:CRS84"
+                },
+                "type": "name"
+            },
+            "features": [
+                {
+                    "geometry": {
+                        "coordinates": [
+                            5.857151285045644,
+                            50.87425546858122
+                        ],
+                        "type": "Point"
+                    },
+                    "properties": {
+                        "naam": "Hekerbeekdal",
+                        "adres": "6301 RJ Valkenburg"
+                    },
+                    "type": "Feature"
+                }
+            ],
+            "name": "Aeres",
+            "type": "FeatureCollection"
+        };
+
+        let jsonlayer = L.geoJson(geojson_marker, {
+        onEachFeature: onEachFeature,
+        pointToLayer: function (ftr, latlng) {
+          return L.marker([latlng.lat, latlng.lng], {icon: fontAwesomeIcon})
+        }
+        }).addTo(map);
+
+        function onEachFeature(feature, layer) {
+        layer.bindPopup('<b>' + feature.properties.naam + '</b>', {width:'600px'});
+        }
+
+
+    </script>         
+
+
+</body>

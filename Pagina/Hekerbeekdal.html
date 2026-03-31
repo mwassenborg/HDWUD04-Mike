@@ -1,461 +1,694 @@
-<!DOCTYPE html>
-
+<!doctype html>
+<html lang="nl">
 <head>
-  <link rel="stylesheet" href="./CSS/stylesheet.css">
-  <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css"
-    integrity="sha256-p4NxAoJBhIIN+hmNHrzRCf9tD/miZyoHS5obTRR9BMY="
-    crossorigin=""/>
-  <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"
-    integrity="sha256-20nQCchB9co0qIjJZRGuk2/Z9VM+kNiyxNV1lvTlZBo="
-    crossorigin=""></script>
-  <script src="https://cdnjs.cloudflare.com/ajax/libs/leaflet.heat/0.2.0/leaflet-heat.js"></script>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Hekerbeekdal</title>
+  <link rel="stylesheet" href="../CSS/stylesheet.css">
+  <link href="https://fonts.googleapis.com/css2?family=DM+Serif+Display:ital@0;1&family=DM+Sans:wght@300;400;500;600&display=swap" rel="stylesheet">
   <script src="https://kit.fontawesome.com/e766bcebc4.js" crossorigin="anonymous"></script>
 
   <style>
-    #map { height: 60vw; }
-
-    /* ── Control bar ── */
-    #control-bar {
-      display: none;
-      align-items: center;
-      gap: 12px;
-      padding: 8px 16px;
-      background: #f4f4f4;
-      border: 1px solid #ccc;
-      border-top: none;
+    :root {
+      --blauw:       #005b8c;
+      --donkerblauw: #003f62;
+      --diepblauw:   #002a45;
+      --lichtblauw:  #e8f4fb;
+      --accent:      #1a8fb8;
+      --oranje:      #e67e22;
+      --groen:       #2ecc71;
+      --rood:        #e74c3c;
+      --geel:        #f39c12;
+      --tekst:       #1a2a35;
+      --subtekst:    #4a6070;
+      --wit:         #ffffff;
+      --achtergrond: #f4f7fa;
     }
 
-    #control-bar button {
-      padding: 4px 12px;
-      cursor: pointer;
-      font-size: 0.8rem;
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+
+    body {
+      font-family: 'DM Sans', sans-serif;
+      background: var(--achtergrond);
+      color: var(--tekst);
+      font-size: 16px;
     }
 
-    #time-slider { flex: 1; cursor: pointer; }
-
-    #precip-label {
-      font-size: 0.85rem;
-      font-weight: bold;
-      min-width: 110px;
-      text-align: right;
+    /* ── Navigatie (zelfde als index) ── */
+    #topbar {
+      background: var(--diepblauw);
+      color: rgba(255,255,255,0.7);
+      font-size: 0.78rem;
+      padding: 6px 24px;
     }
-
-    /* ── Barchart ── */
-    #chart-panel {
-      display: none;
-      padding: 8px 16px 12px;
-      background: #f4f4f4;
-      border: 1px solid #ccc;
-      border-top: none;
-    }
-
-    #chart-panel h3 { font-size: 0.75rem; color: #666; margin-bottom: 5px; }
-
-    #bar-chart {
-      display: flex;
-      align-items: flex-end;
-      gap: 2px;
-      height: 50px;
-      overflow-x: auto;
-    }
-
-    .bar-wrap { display: flex; flex-direction: column; align-items: center; cursor: pointer; flex-shrink: 0; }
-    .bar { width: 7px; min-height: 2px; border-radius: 2px 2px 0 0; opacity: 0.85; transition: opacity 0.15s; }
-    .bar-wrap:hover .bar { opacity: 0.6; }
-    .bar-wrap.active .bar { outline: 1.5px solid #333; opacity: 1; }
-
-    /* ── Legenda ── */
-    .rain-legend {
-      background: white;
-      padding: 8px 12px;
-      border-radius: 4px;
-      border: 1px solid #ccc;
-      font-size: 0.72rem;
-      line-height: 1.8;
-    }
-
-    .rain-legend b { display: block; margin-bottom: 3px; font-size: 0.75rem; }
-
-    .rain-legend-bar {
-      width: 120px;
-      height: 10px;
-      border-radius: 3px;
-      background: linear-gradient(to right, #2196f3, #00e5ff, #4caf50, #ff9800, #f44336);
-      margin: 4px 0 2px;
-    }
-
-    .rain-legend-labels {
+    .topbar-inner {
       display: flex;
       justify-content: space-between;
-      font-size: 0.65rem;
-      color: #666;
+      align-items: center;
     }
+    #hoofdnavigatie {
+      background: var(--blauw);
+      box-shadow: 0 2px 8px rgba(0,0,0,0.18);
+      position: sticky;
+      top: 0;
+      z-index: 1000;
+    }
+    .header-inner {
+      max-width: 100%;
+      padding: 0 24px;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      height: 72px;
+    }
+    .logo-wrap {
+      display: flex;
+      align-items: center;
+      gap: 14px;
+      text-decoration: none;
+    }
+    .logo-wrap img { height: 44px; width: auto; }
+    .logo-tekst h1 { color: #fff; font-size: 1.1rem; font-weight: 600; font-family: 'DM Sans', sans-serif; }
+    .logo-tekst span { color: rgba(255,255,255,0.65); font-size: 0.7rem; text-transform: uppercase; letter-spacing: 0.5px; }
+    .hoofdmenu { display: flex; gap: 4px; }
+    .hoofdmenu a {
+      color: rgba(255,255,255,0.85);
+      text-decoration: none;
+      padding: 8px 14px;
+      border-radius: 4px;
+      font-size: 0.88rem;
+      font-weight: 600;
+      transition: background 0.2s;
+    }
+    .hoofdmenu a:hover, .hoofdmenu a.actief { background: rgba(255,255,255,0.15); color: #fff; }
 
-    /* ── Tijdlabel ── */
-    #map-time-label {
-      background: rgba(255,255,255,0.92);
-      padding: 4px 10px;
-      border-radius: 3px;
-      border: 1px solid #ccc;
+    /* ── Hero ── */
+    .info-hero {
+      background: linear-gradient(135deg, var(--diepblauw) 0%, var(--blauw) 55%, var(--accent) 100%);
+      color: #fff;
+      padding: 72px 48px 80px;
+      position: relative;
+      overflow: hidden;
+    }
+    .info-hero::before {
+      content: '';
+      position: absolute;
+      inset: 0;
+      background: url("data:image/svg+xml,%3Csvg width='60' height='60' viewBox='0 0 60 60' xmlns='http://www.w3.org/2000/svg'%3E%3Cg fill='none' fill-rule='evenodd'%3E%3Cg fill='%23ffffff' fill-opacity='0.03'%3E%3Cpath d='M36 34v-4h-2v4h-4v2h4v4h2v-4h4v-2h-4zm0-30V0h-2v4h-4v2h4v4h2V6h4V4h-4zM6 34v-4H4v4H0v2h4v4h2v-4h4v-2H6zM6 4V0H4v4H0v2h4v4h2V6h4V4H6z'/%3E%3C/g%3E%3C/g%3E%3C/svg%3E");
+    }
+    .info-hero-inner {
+      max-width: 800px;
+      position: relative;
+      z-index: 1;
+    }
+    .breadcrumb {
       font-size: 0.78rem;
-      font-weight: bold;
-      pointer-events: none;
+      color: rgba(255,255,255,0.55);
+      margin-bottom: 20px;
+      display: flex;
+      gap: 8px;
+      align-items: center;
+    }
+    .breadcrumb a { color: rgba(255,255,255,0.55); text-decoration: none; }
+    .breadcrumb a:hover { color: #fff; }
+    .info-hero h2 {
+      font-family: 'DM Serif Display', serif;
+      font-size: 3rem;
+      line-height: 1.1;
+      margin-bottom: 16px;
+      font-weight: 400;
+    }
+    .info-hero p {
+      font-size: 1.1rem;
+      color: rgba(255,255,255,0.75);
+      max-width: 620px;
+      line-height: 1.7;
+    }
+    .hero-tags {
+      display: flex;
+      gap: 10px;
+      margin-top: 28px;
+      flex-wrap: wrap;
+    }
+    .hero-tag {
+      background: rgba(255,255,255,0.12);
+      border: 1px solid rgba(255,255,255,0.25);
+      color: rgba(255,255,255,0.85);
+      padding: 5px 14px;
+      border-radius: 20px;
+      font-size: 0.78rem;
+      font-weight: 500;
     }
 
-    /* ── Laadmelding ── */
-    #load-status {
-      background: rgba(255,255,255,0.92);
-      padding: 4px 10px;
-      border-radius: 3px;
-      border: 1px solid #ccc;
-      font-size: 0.72rem;
-      color: #555;
-      pointer-events: none;
+    /* ── Content ── */
+    .pagina-content {
+      max-width: 1100px;
+      margin: 0 auto;
+      padding: 64px 32px;
+    }
+
+    /* ── Sectie titels ── */
+    .sectie-titel {
+      font-family: 'DM Serif Display', serif;
+      font-size: 1.9rem;
+      color: var(--donkerblauw);
+      margin-bottom: 8px;
+      font-weight: 400;
+    }
+    .sectie-lijn {
+      width: 48px;
+      height: 3px;
+      background: var(--accent);
+      border-radius: 2px;
+      margin-bottom: 28px;
+    }
+
+    /* ── Intro blok ── */
+    .intro-grid {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 48px;
+      margin-bottom: 72px;
+      align-items: start;
+    }
+    .intro-tekst p {
+      color: var(--subtekst);
+      line-height: 1.8;
+      margin-bottom: 16px;
+      font-size: 0.97rem;
+    }
+    .gebied-stats {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 16px;
+    }
+    .stat-kaart {
+      background: var(--wit);
+      border-radius: 10px;
+      padding: 20px;
+      border-left: 4px solid var(--accent);
+      box-shadow: 0 2px 12px rgba(0,0,0,0.06);
+    }
+    .stat-kaart .stat-getal {
+      font-family: 'DM Serif Display', serif;
+      font-size: 2rem;
+      color: var(--donkerblauw);
+      line-height: 1;
+    }
+    .stat-kaart .stat-label {
+      font-size: 0.78rem;
+      color: var(--subtekst);
+      margin-top: 4px;
+      text-transform: uppercase;
+      letter-spacing: 0.5px;
+    }
+
+    /* ── Drempelwaarden ── */
+    .drempel-sectie { margin-bottom: 72px; }
+    .drempel-tabel {
+      width: 100%;
+      border-collapse: separate;
+      border-spacing: 0 8px;
+      margin-top: 8px;
+    }
+    .drempel-tabel thead th {
+      text-align: left;
+      font-size: 0.75rem;
+      text-transform: uppercase;
+      letter-spacing: 0.8px;
+      color: var(--subtekst);
+      padding: 0 16px 8px;
+      font-weight: 600;
+    }
+    .drempel-tabel tbody tr {
+      background: var(--wit);
+      box-shadow: 0 2px 8px rgba(0,0,0,0.05);
+      border-radius: 8px;
+    }
+    .drempel-tabel tbody td {
+      padding: 16px;
+      font-size: 0.93rem;
+      vertical-align: middle;
+    }
+    .drempel-tabel tbody td:first-child { border-radius: 8px 0 0 8px; }
+    .drempel-tabel tbody td:last-child  { border-radius: 0 8px 8px 0; }
+
+    .niveau-badge {
+      display: inline-flex;
+      align-items: center;
+      gap: 7px;
+      padding: 5px 12px;
+      border-radius: 20px;
+      font-size: 0.8rem;
+      font-weight: 600;
+    }
+    .niveau-groen  { background: #e8faf0; color: #1a7a42; }
+    .niveau-geel   { background: #fef9e7; color: #9a6900; }
+    .niveau-oranje { background: #fef0e6; color: #a84300; }
+    .niveau-rood   { background: #fdeaea; color: #9b1b1b; }
+
+    .mm-pill {
+      font-family: 'DM Serif Display', serif;
+      font-size: 1.25rem;
+      color: var(--donkerblauw);
+      font-weight: 400;
+    }
+
+    /* ── Impact kaarten ── */
+    .impact-sectie { margin-bottom: 72px; }
+    .impact-grid {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 20px;
+      margin-top: 8px;
+    }
+    .impact-kaart {
+      background: var(--wit);
+      border-radius: 12px;
+      padding: 28px 24px;
+      box-shadow: 0 2px 12px rgba(0,0,0,0.06);
+      border-top: 4px solid transparent;
+      transition: transform 0.2s, box-shadow 0.2s;
+    }
+    .impact-kaart:hover {
+      transform: translateY(-3px);
+      box-shadow: 0 8px 24px rgba(0,0,0,0.1);
+    }
+    .impact-kaart.blauw  { border-top-color: var(--accent); }
+    .impact-kaart.oranje { border-top-color: var(--oranje); }
+    .impact-kaart.rood   { border-top-color: var(--rood); }
+    .impact-icoon {
+      width: 44px;
+      height: 44px;
+      border-radius: 10px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 1.2rem;
+      margin-bottom: 16px;
+    }
+    .icoon-blauw  { background: #e8f4fb; color: var(--accent); }
+    .icoon-oranje { background: #fef0e6; color: var(--oranje); }
+    .icoon-rood   { background: #fdeaea; color: var(--rood); }
+    .impact-kaart h3 {
+      font-family: 'DM Serif Display', serif;
+      font-size: 1.1rem;
+      margin-bottom: 10px;
+      font-weight: 400;
+      color: var(--donkerblauw);
+    }
+    .impact-kaart p {
+      font-size: 0.88rem;
+      color: var(--subtekst);
+      line-height: 1.7;
+    }
+
+    /* ── Tijdlijn ── */
+    .tijdlijn-sectie { margin-bottom: 72px; }
+    .tijdlijn {
+      position: relative;
+      padding-left: 40px;
+      margin-top: 16px;
+    }
+    .tijdlijn::before {
+      content: '';
+      position: absolute;
+      left: 14px;
+      top: 0; bottom: 0;
+      width: 2px;
+      background: linear-gradient(to bottom, var(--accent), var(--lichtblauw));
+    }
+    .tijdlijn-item {
+      position: relative;
+      margin-bottom: 32px;
+      background: var(--wit);
+      border-radius: 10px;
+      padding: 20px 24px;
+      box-shadow: 0 2px 10px rgba(0,0,0,0.05);
+    }
+    .tijdlijn-item::before {
+      content: '';
+      position: absolute;
+      left: -34px;
+      top: 22px;
+      width: 14px; height: 14px;
+      background: var(--accent);
+      border-radius: 50%;
+      border: 3px solid var(--wit);
+      box-shadow: 0 0 0 2px var(--accent);
+    }
+    .tijdlijn-datum {
+      font-size: 0.75rem;
+      text-transform: uppercase;
+      letter-spacing: 0.8px;
+      color: var(--accent);
+      font-weight: 600;
+      margin-bottom: 6px;
+    }
+    .tijdlijn-item h3 {
+      font-size: 1rem;
+      font-weight: 600;
+      color: var(--donkerblauw);
+      margin-bottom: 6px;
+    }
+    .tijdlijn-item p {
+      font-size: 0.88rem;
+      color: var(--subtekst);
+      line-height: 1.65;
+    }
+
+    /* ── Maatregel banner ── */
+    .maatregel-banner {
+      background: linear-gradient(135deg, #1a3a2a 0%, #1e5c35 100%);
+      border-radius: 16px;
+      padding: 40px 48px;
+      color: #fff;
+      display: grid;
+      grid-template-columns: 1fr auto;
+      gap: 32px;
+      align-items: center;
+      margin-bottom: 72px;
+    }
+    .maatregel-banner h3 {
+      font-family: 'DM Serif Display', serif;
+      font-size: 1.6rem;
+      font-weight: 400;
+      margin-bottom: 10px;
+    }
+    .maatregel-banner p {
+      color: rgba(255,255,255,0.75);
+      font-size: 0.95rem;
+      line-height: 1.7;
+      max-width: 560px;
+    }
+    .maatregel-icoon {
+      font-size: 4rem;
+      opacity: 0.4;
+    }
+
+    /* ── Footer ── */
+    #footer {
+      background: var(--diepblauw);
+      color: rgba(255,255,255,0.75);
+      padding: 48px 32px 0;
+      margin-top: 0;
+    }
+    .footer-inner {
+      max-width: 1100px;
+      margin: 0 auto;
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 40px;
+      padding-bottom: 40px;
+      border-bottom: 1px solid rgba(255,255,255,0.1);
+    }
+    .footer-col h3 {
+      color: #fff;
+      font-size: 0.82rem;
+      font-weight: 700;
+      text-transform: uppercase;
+      letter-spacing: 1px;
+      margin-bottom: 14px;
+    }
+    .footer-col nav { display: flex; flex-direction: column; gap: 10px; }
+    .footer-col nav a, .footer-col a {
+      color: rgba(255,255,255,0.6);
+      text-decoration: none;
+      font-size: 0.88rem;
+      transition: color 0.2s;
+    }
+    .footer-col nav a:hover, .footer-col a:hover { color: #fff; }
+    .footer-col p { font-size: 0.88rem; margin-bottom: 8px; }
+    .footer-bottom {
+      max-width: 1100px;
+      margin: 0 auto;
+      padding: 16px 0;
+      font-size: 0.75rem;
+      color: rgba(255,255,255,0.35);
+      text-align: center;
+    }
+
+    /* ── Animaties ── */
+    @keyframes fadeUp {
+      from { opacity: 0; transform: translateY(24px); }
+      to   { opacity: 1; transform: translateY(0); }
+    }
+    .fade-up { animation: fadeUp 0.6s ease both; }
+    .fade-up-2 { animation: fadeUp 0.6s 0.15s ease both; }
+    .fade-up-3 { animation: fadeUp 0.6s 0.3s ease both; }
+
+    @media (max-width: 768px) {
+      .intro-grid, .impact-grid { grid-template-columns: 1fr; }
+      .maatregel-banner { grid-template-columns: 1fr; }
+      .maatregel-icoon { display: none; }
+      .info-hero h2 { font-size: 2rem; }
+      .info-hero { padding: 48px 24px 56px; }
+      .pagina-content { padding: 40px 20px; }
     }
   </style>
 </head>
-
 <body>
-  <div id="top-container">
-    <div id="topbar">
-      <div class="topbar-inner">
-        <span>Waterschap Limburg</span>
-        <div class="topbar-rechts"></div>
-      </div>
-    </div>
 
-    <div id="header">
-      <h2>GeoJSON inladen</h2>
-    </div>
-
-    <div id="map"></div>
-
-    <div id="control-bar">
-      <button id="btn-prev">◀</button>
-      <input type="range" id="time-slider" min="0" value="0"/>
-      <button id="btn-next">▶</button>
-      <span id="precip-label">— mm/u</span>
-    </div>
-
-    <div id="chart-panel">
-      <h3>Gemiddelde neerslag Hekerbeekdal — 72 uur forecast (klik op een balk)</h3>
-      <div id="bar-chart"></div>
+  <!-- ── Topbalk ── -->
+  <div id="topbar">
+    <div class="topbar-inner">
+      <span>Waterschap Limburg</span>
     </div>
   </div>
 
-  <script>
-    // =========================================================================
-    // KAART INITIALISATIE
-    // =========================================================================
+  <!-- ── Navigatie ── -->
+  <header id="hoofdnavigatie">
+    <div class="header-inner">
+      <a href="/index.html" class="logo-wrap">
+        <img src="/IMG/logo-limburg-kleur_1.png" alt="Waterschap Limburg">
+        <div class="logo-tekst">
+          <h1>Hekerbeekdal</h1>
+          <span>Waterschap Limburg Early Warning Systeem</span>
+        </div>
+      </a>
+      <nav class="hoofdmenu">
+        <a href="/index.html">Hekerbeekdal</a>
+        <a href="/Pagina/hekerbeekdal.html" class="actief">Over het gebied</a>
+        <a href="/Pagina/Over-ons.html">Over ons</a>
+      </nav>
+    </div>
+  </header>
 
-    const osm = L.tileLayer('https://{s}.tile.osm.org/{z}/{x}/{y}.png');
+  <!-- ── Hero ── -->
+  <div class="info-hero">
+    <div class="info-hero-inner">
+      <div class="breadcrumb fade-up">
+        <a href="/index.html">Home</a>
+        <i class="fa-solid fa-chevron-right" style="font-size:0.6rem"></i>
+        <span>Hekerbeekdal</span>
+      </div>
+      <h2 class="fade-up-2">Het Hekerbeekdal</h2>
+      <p class="fade-up-3">
+        Een hydrologisch zelfstandig stroomgebied in Zuid-Limburg, gelegen tussen Klimmen
+        en Valkenburg. Het gebied vormt de basis van dit Early Warning Systeem.
+      </p>
+      <div class="hero-tags fade-up-3">
+        <span class="hero-tag"><i class="fa-solid fa-location-dot"></i> &nbsp;Valkenburg, Zuid-Limburg</span>
+        <span class="hero-tag"><i class="fa-solid fa-water"></i> &nbsp;Zijbeek van de Geul</span>
+        <span class="hero-tag"><i class="fa-solid fa-mountain"></i> &nbsp;130m hoogteverschil</span>
+        <span class="hero-tag"><i class="fa-solid fa-wheat-awn"></i> &nbsp;Agrarisch landgebruik</span>
+      </div>
+    </div>
+  </div>
 
-    const map = L.map('map', {
-      center: [50.8740, 5.8560],
-      zoom: 14,
-      layers: [osm]
-    });
+  <!-- ── Pagina inhoud ── -->
+  <div class="pagina-content">
 
-    // ── KNMI Radar ────────────────────────────────────────────────────────────
-    let radarLayer;
+    <!-- Intro -->
+    <div class="intro-grid">
+      <div class="intro-tekst">
+        <h2 class="sectie-titel">Over het gebied</h2>
+        <div class="sectie-lijn"></div>
+        <p>
+          Het Hekerbeekdal begint bij het dorpje Klimmen in de gemeente Voerendaal en
+          stroomt via Hellebeuk, Heek en Walem richting Valkenburg, waar het uitmondt in
+          een wadi naast de spoorlijn.
+        </p>
+        <p>
+          Het gebied is gekozen als onderzoeksgebied omdat het een hydrologisch
+          zelfstandige eenheid vormt: er is geen instroming vanuit de Geul of andere
+          zijbeken stroomopwaarts. Dit maakt het ideaal voor nauwkeurige modellering.
+        </p>
+        <p>
+          Het landgebruik wordt gedomineerd door agrarisch grasland, mais en aardappelen.
+          De vruchtbare lössgronden zorgen voor relatief lage infiltratiesnelheden bij hevige
+          regenval, wat het overstromingsrisico vergroot.
+        </p>
+      </div>
+      <div class="gebied-stats">
+        <div class="stat-kaart">
+          <div class="stat-getal">130m</div>
+          <div class="stat-label">Hoogteverschil in het dal</div>
+        </div>
+        <div class="stat-kaart">
+          <div class="stat-getal">20mm</div>
+          <div class="stat-label">Kritische drempel per uur</div>
+        </div>
+        <div class="stat-kaart">
+          <div class="stat-getal">1:10</div>
+          <div class="stat-label">Huidige normbescherming</div>
+        </div>
+        <div class="stat-kaart">
+          <div class="stat-getal">1:100</div>
+          <div class="stat-label">Gewenste normbescherming</div>
+        </div>
+      </div>
+    </div>
 
-    function refreshRadar() {
-      if (radarLayer) map.removeLayer(radarLayer);
-      radarLayer = L.tileLayer.wms(
-        'https://anonymous.api.dataplatform.knmi.nl/wms/adaguc-server?_ts=' + Date.now(), {
-          layers:      'RAD_NL25_PCP_CM',
-          DATASET:     'radar_5min_reflectivity_composites_realtime',
-          format:      'image/png',
-          transparent: true,
-          version:     '1.3.0',
-          opacity:     0.7
-        }
-      ).addTo(map);
-    }
+    <!-- Drempelwaarden -->
+    <div class="drempel-sectie">
+      <h2 class="sectie-titel">Drempelwaarden & risiconiveaus</h2>
+      <div class="sectie-lijn"></div>
+      <table class="drempel-tabel">
+        <thead>
+          <tr>
+            <th>Neerslag (mm/uur)</th>
+            <th>Risiconiveau</th>
+            <th>Situatie</th>
+            <th>Gevolgen</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr>
+            <td><span class="mm-pill">&lt; 15 mm</span></td>
+            <td><span class="niveau-badge niveau-groen"><i class="fa-solid fa-circle-check"></i> Normaal</span></td>
+            <td>Wadi's vangen water op</td>
+            <td>Geen wateroverlast in bebouwde omgeving</td>
+          </tr>
+          <tr>
+            <td><span class="mm-pill">15 – 20 mm</span></td>
+            <td><span class="niveau-badge niveau-geel"><i class="fa-solid fa-triangle-exclamation"></i> Informatief</span></td>
+            <td>Lichte overstroming Hekerbeekweg</td>
+            <td>Overlast op weg, wijk blijft droog</td>
+          </tr>
+          <tr>
+            <td><span class="mm-pill">20 – 30 mm</span></td>
+            <td><span class="niveau-badge niveau-oranje"><i class="fa-solid fa-bell"></i> Waarschuwing</span></td>
+            <td>Wadi bij spoor bereikt limiet</td>
+            <td>Water stroomt wijk én centrum Valkenburg in</td>
+          </tr>
+          <tr>
+            <td><span class="mm-pill">&gt; 30 mm</span></td>
+            <td><span class="niveau-badge niveau-rood"><i class="fa-solid fa-circle-xmark"></i> Crisis</span></td>
+            <td>Alle wadi's volledig vol</td>
+            <td>Ernstige overlast, meerdere wijken getroffen</td>
+          </tr>
+          <tr>
+            <td><span class="mm-pill">63 mm (T10)</span></td>
+            <td><span class="niveau-badge niveau-rood"><i class="fa-solid fa-circle-xmark"></i> Extreem</span></td>
+            <td>Eens per 10 jaar bui</td>
+            <td>0,8 – 1,6m waterdiepte bij woningen centrum</td>
+          </tr>
+          <tr>
+            <td><span class="mm-pill">99 mm (T100)</span></td>
+            <td><span class="niveau-badge niveau-rood"><i class="fa-solid fa-circle-xmark"></i> Extreem</span></td>
+            <td>Eens per 100 jaar bui</td>
+            <td>Tot 10m waterdiepte op diepste punten</td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
 
-    refreshRadar();
-    setInterval(refreshRadar, 60000);
+    <!-- Impact -->
+    <div class="impact-sectie">
+      <h2 class="sectie-titel">Impact op het gebied</h2>
+      <div class="sectie-lijn"></div>
+      <div class="impact-grid">
+        <div class="impact-kaart blauw">
+          <div class="impact-icoon icoon-blauw"><i class="fa-solid fa-house-flood-water"></i></div>
+          <h3>Bebouwde omgeving</h3>
+          <p>Bij een T10-bui staan woningen rondom Valkenburg en langs de Geul bloot aan waterdieptes van 0,8 tot meer dan 1,6 meter. De Sint Pieterstraat — een van de hoofdstraten — loopt direct vol.</p>
+        </div>
+        <div class="impact-kaart oranje">
+          <div class="impact-icoon icoon-oranje"><i class="fa-solid fa-road"></i></div>
+          <h3>Infrastructuur</h3>
+          <p>Het kritieke knelpunt is de spoorbrug aan de Hekerbeekweg. Zodra de wadi overloopt, stroomt water door deze doorgang het dorpscentrum van Valkenburg binnen.</p>
+        </div>
+        <div class="impact-kaart rood">
+          <div class="impact-icoon icoon-rood"><i class="fa-solid fa-wheat-awn-circle-exclamation"></i></div>
+          <h3>Landbouw</h3>
+          <p>Het agrarische landgebruik (mais, grasland) zorgt voor lage infiltratiesnelheden. Hierdoor stroomt meer water snel af naar de lagergelegen woongebieden.</p>
+        </div>
+      </div>
+    </div>
 
-    // ── FontAwesome marker ────────────────────────────────────────────────────
-    const fontAwesomeIcon = L.divIcon({
-      html: '<i class="fa-solid fa-location-dot"></i>',
-      iconSize: [1, 1],
-      className: 'fontawesome_icon'
-    });
+    <!-- Projecttijdlijn -->
+    <div class="tijdlijn-sectie">
+      <h2 class="sectie-titel">Projectverloop</h2>
+      <div class="sectie-lijn"></div>
+      <div class="tijdlijn">
+        <div class="tijdlijn-item">
+          <div class="tijdlijn-datum">Oktober 2025</div>
+          <h3>Introductiegesprek Waterschap Limburg</h3>
+          <p>Eerste gesprek met Peter Hulst en Nicole Meijer. Wensen en verwachtingen geïnventariseerd. Focus bepaald op vroeg-signalering en ondersteuning van besluitvorming.</p>
+        </div>
+        <div class="tijdlijn-item">
+          <div class="tijdlijn-datum">Oktober – November 2025</div>
+          <h3>Gebiedsselectie & terreinverkenning</h3>
+          <p>Fietstocht door gemeente Valkenburg. Hekerbeekdal gekozen als onderzoeksgebied vanwege hydrologische zelfstandigheid en duidelijk afgebakend stroomgebied.</p>
+        </div>
+        <div class="tijdlijn-item">
+          <div class="tijdlijn-datum">November 2025</div>
+          <h3>Hydrologische modellering</h3>
+          <p>ArcGIS Pro model opgebouwd. Neerslagscenario's gesimuleerd van 10 t/m 40mm per uur in stappen van 5mm. Kritische drempelwaarde vastgesteld op 20mm/uur.</p>
+        </div>
+        <div class="tijdlijn-item">
+          <div class="tijdlijn-datum">Januari 2026</div>
+          <h3>T10 & T100 scenario's uitgewerkt</h3>
+          <p>Op basis van STOWA-data zijn extreme buien doorgerekend. Bij T10 (63mm) ernstige wateroverlast bij woningen; bij T100 (99mm) levensgevaarlijke situaties mogelijk.</p>
+        </div>
+        <div class="tijdlijn-item">
+          <div class="tijdlijn-datum">Maart 2026</div>
+          <h3>Early Warning Systeem live</h3>
+          <p>Webkaart gekoppeld aan KNMI Harmonie-model. Automatische drempelcontrole actief. Systeem verstuurt e-mailmelding bij verwachte overschrijding van 20mm/uur.</p>
+        </div>
+      </div>
+    </div>
 
-    // ── GeoJSON punt marker ───────────────────────────────────────────────────
-    const geojson_marker = {
-      "type": "FeatureCollection",
-      "features": [{
-        "type": "Feature",
-        "geometry": { "type": "Point", "coordinates": [5.857151285045644, 50.87425546858122] },
-        "properties": { "naam": "Hekerbeekdal", "adres": "6301 RJ Valkenburg" }
-      }]
-    };
+    <!-- Maatregel -->
+    <div class="maatregel-banner">
+      <div>
+        <h3>Aanvullende maatregel: loofbos als waterbuffer</h3>
+        <p>
+          Om de wateroverlast te beperken, is onderzocht of een deel van het agrarisch grasland
+          in het Hekerbeekdal vervangen kan worden door loofbos. Bos heeft een aanzienlijk
+          hogere infiltratiecapaciteit: boomwortels verbeteren de bodemstructuur en verhogen
+          de doorlatendheid, waardoor minder water snel afstroomt richting Valkenburg.
+          Simulaties tonen aan dat deze maatregel bij een bui van 40mm merkbaar effect heeft
+          op de waterdieptes stroomafwaarts.
+        </p>
+      </div>
+      <div class="maatregel-icoon">🌳</div>
+    </div>
 
-    L.geoJson(geojson_marker, {
-      onEachFeature: (feature, layer) =>
-        layer.bindPopup('<b>' + feature.properties.naam + '</b>'),
-      pointToLayer: (ftr, latlng) =>
-        L.marker([latlng.lat, latlng.lng], { icon: fontAwesomeIcon })
-    }).addTo(map);
+  </div><!-- /.pagina-content -->
 
-    // ── GeoJSON grens Hekerbeekdal (jouw bestand) ────────────────────────────
-    const HEKERBEEKDAL_GEOJSON = {"type":"FeatureCollection","crs":{"type":"name","properties":{"name":"EPSG:4326"}},"features":[{"type":"Feature","id":1,"geometry":{"type":"Polygon","coordinates":[[[5.83278695519504,50.8668136373307],[5.83628422071096,50.8699904758606],[5.84174412091222,50.8718512010068],[5.84475945250315,50.8732508714868],[5.85343609100665,50.8785856560635],[5.86089854092654,50.8818085052934],[5.86869306226526,50.8824511712116],[5.87187373211727,50.8818202696041],[5.87595804765992,50.879362710745],[5.87682212957731,50.8771780653809],[5.87719630033652,50.8751338227889],[5.87638715734708,50.8737942555048],[5.87087116092422,50.8706871481932],[5.8700109795242,50.8687075523679],[5.86658737202713,50.8668202086332],[5.86186775745818,50.8663813080579],[5.85552873950221,50.8667939789247],[5.84937347264218,50.8664164269788],[5.84353339355075,50.8663741352961],[5.83860617125017,50.8657086004643],[5.83713426019307,50.8648048429774],[5.83278695519504,50.8668136373307]]]},"properties":{"OBJECTID":1}}]};
+  <!-- ── Footer ── -->
+  <div id="footer">
+    <div class="footer-inner">
+      <div class="footer-col">
+        <h3>Navigatie</h3>
+        <nav>
+          <a href="/index.html">Hekerbeekdal – Live kaart</a>
+          <a href="/Pagina/hekerbeekdal.html">Over het gebied</a>
+          <a href="/Pagina/Over-ons.html">Over ons</a>
+        </nav>
+      </div>
+      <div class="footer-col">
+        <h3>Contact</h3>
+        <p>Waterschap Limburg</p>
+        <a href="mailto:3027057@aeres.nl">3027057@aeres.nl</a>
+      </div>
+    </div>
+    <div class="footer-bottom">
+      &copy; 2026 Waterschap Limburg – Early Warning Systeem Hekerbeekdal
+    </div>
+  </div>
 
-    // Toon de polygoongrens op de kaart
-    L.geoJson(HEKERBEEKDAL_GEOJSON, {
-      style: {
-        color: '#0066cc',
-        weight: 2,
-        fillOpacity: 0,
-        dashArray: '5, 5'
-      }
-    }).addTo(map);
-
-
-    // =========================================================================
-    // NEERSLAG HEATMAP OVER HET HEKERBEEKDAL
-    // =========================================================================
-
-    // ── Stap 1: genereer een grid van punten binnen de polygoon ───────────────
-
-    /**
-     * Ray-casting algoritme: geeft true als [lon, lat] binnen de polygoon valt.
-     */
-    function pointInPolygon(lon, lat, polygon) {
-      const coords = polygon[0]; // outer ring
-      let inside = false;
-      for (let i = 0, j = coords.length - 1; i < coords.length; j = i++) {
-        const xi = coords[i][0], yi = coords[i][1];
-        const xj = coords[j][0], yj = coords[j][1];
-        const intersect = ((yi > lat) !== (yj > lat)) &&
-          (lon < (xj - xi) * (lat - yi) / (yj - yi) + xi);
-        if (intersect) inside = !inside;
-      }
-      return inside;
-    }
-
-    /**
-     * Genereert een grid van lat/lon punten binnen de polygoon.
-     * @param {Array} polygon - GeoJSON polygon coordinates
-     * @param {number} step   - stapgrootte in graden (~0.005° ≈ 400m)
-     */
-    function generateGridPoints(polygon, step = 0.006) {
-      const coords = polygon[0];
-      const lons = coords.map(c => c[0]);
-      const lats = coords.map(c => c[1]);
-      const minLon = Math.min(...lons), maxLon = Math.max(...lons);
-      const minLat = Math.min(...lats), maxLat = Math.max(...lats);
-
-      const points = [];
-      for (let lat = minLat; lat <= maxLat; lat += step) {
-        for (let lon = minLon; lon <= maxLon; lon += step) {
-          if (pointInPolygon(lon, lat, polygon)) {
-            points.push({ lat: +lat.toFixed(6), lon: +lon.toFixed(6) });
-          }
-        }
-      }
-      return points;
-    }
-
-    const polygonCoords = HEKERBEEKDAL_GEOJSON.features[0].geometry.coordinates;
-    const gridPoints    = generateGridPoints(polygonCoords, 0.006);
-
-    // ── Stap 2: haal voor elk punt de neerslag op ─────────────────────────────
-
-    async function fetchPrecip(lat, lon) {
-      const url =
-        `https://api.open-meteo.com/v1/forecast` +
-        `?latitude=${lat}&longitude=${lon}` +
-        `&hourly=precipitation&models=knmi_seamless&forecast_days=3`;
-      const r = await fetch(url);
-      if (!r.ok) throw new Error(`HTTP ${r.status}`);
-      const j = await r.json();
-      return j.hourly; // { time: [...], precipitation: [...] }
-    }
-
-    // ── State ─────────────────────────────────────────────────────────────────
-    let times        = [];
-    let allPrecips   = []; // allPrecips[gridIndex][timeIndex] = mm
-    let timeIndex    = 0;
-    let heatLayer    = null;
-
-    // ── Leaflet controls ──────────────────────────────────────────────────────
-    const timeControl = L.control({ position: 'topleft' });
-    timeControl.onAdd = function () {
-      const div = L.DomUtil.create('div');
-      div.id = 'map-time-label';
-      div.textContent = 'Forecast laden…';
-      return div;
-    };
-    timeControl.addTo(map);
-
-    const statusControl = L.control({ position: 'bottomleft' });
-    statusControl.onAdd = function () {
-      const div = L.DomUtil.create('div');
-      div.id = 'load-status';
-      div.textContent = '';
-      return div;
-    };
-    statusControl.addTo(map);
-
-    const rainLegend = L.control({ position: 'bottomright' });
-    rainLegend.onAdd = function () {
-      const div = L.DomUtil.create('div', 'rain-legend');
-      div.innerHTML = `
-        <b>Neerslag (mm/u)</b>
-        <div class="rain-legend-bar"></div>
-        <div class="rain-legend-labels"><span>0</span><span>1</span><span>2</span><span>3</span><span>5+</span></div>
-      `;
-      return div;
-    };
-
-    // ── Helpers ───────────────────────────────────────────────────────────────
-    function formatTime(iso) {
-      return new Date(iso).toLocaleString('nl-NL', {
-        weekday: 'short', day: 'numeric', month: 'short',
-        hour: '2-digit', minute: '2-digit'
-      });
-    }
-
-    function avgPrecipAtTime(idx) {
-      const vals = allPrecips.map(p => p[idx] ?? 0);
-      return vals.reduce((a, b) => a + b, 0) / vals.length;
-    }
-
-    // ── Heatmap renderen ──────────────────────────────────────────────────────
-    function renderFrame(idx) {
-      timeIndex = idx;
-
-      const avg = avgPrecipAtTime(idx);
-      document.getElementById('map-time-label').textContent  = formatTime(times[idx]);
-      document.getElementById('time-slider').value           = idx;
-      document.getElementById('precip-label').textContent    = 'gem. ' + avg.toFixed(2) + ' mm/u';
-
-      // Bouw heatmap data: [lat, lon, intensity]
-      const heatData = gridPoints.map((pt, gi) => {
-        const mm = allPrecips[gi][idx] ?? 0;
-        return [pt.lat, pt.lon, mm];
-      });
-
-      if (heatLayer) map.removeLayer(heatLayer);
-
-      heatLayer = L.heatLayer(heatData, {
-        radius:   45,
-        blur:     30,
-        maxZoom:  16,
-        max:      5,
-        gradient: {
-          0.0:  '#2196f3',
-          0.05: '#00e5ff',
-          0.3:  '#4caf50',
-          0.65: '#ff9800',
-          1.0:  '#f44336'
-        }
-      }).addTo(map);
-
-      // Barchart highlight
-      document.querySelectorAll('.bar-wrap').forEach((el, i) =>
-        el.classList.toggle('active', i === idx)
-      );
-    }
-
-    // ── Barchart ──────────────────────────────────────────────────────────────
-    function buildChart() {
-      const avgs  = times.map((_, i) => avgPrecipAtTime(i));
-      const maxP  = Math.max(...avgs, 0.1);
-      const container = document.getElementById('bar-chart');
-      container.innerHTML = '';
-
-      avgs.forEach((mm, i) => {
-        const wrap = document.createElement('div');
-        wrap.className = 'bar-wrap';
-        if (i === timeIndex) wrap.classList.add('active');
-
-        // kleur op basis van waarde
-        let color;
-        if (mm <= 0)  color = '#2196f3';
-        else if (mm < 0.5) color = '#00e5ff';
-        else if (mm < 2)   color = '#4caf50';
-        else if (mm < 5)   color = '#ff9800';
-        else color = '#f44336';
-
-        const bar = document.createElement('div');
-        bar.className        = 'bar';
-        bar.style.height     = Math.max(2, (mm / maxP) * 46) + 'px';
-        bar.style.background = color;
-        bar.title            = `${formatTime(times[i])}: ${mm.toFixed(2)} mm`;
-
-        wrap.appendChild(bar);
-        wrap.addEventListener('click', () => { renderFrame(i); buildChart(); });
-        container.appendChild(wrap);
-      });
-
-      const active = container.querySelector('.active');
-      if (active) active.scrollIntoView({ inline: 'center', behavior: 'smooth' });
-    }
-
-    // ── Data laden ────────────────────────────────────────────────────────────
-    async function loadRainData() {
-      const statusEl = document.getElementById('load-status');
-      statusEl.textContent = `0 / ${gridPoints.length} punten geladen…`;
-
-      try {
-        // Parallel alle punten ophalen
-        let loaded = 0;
-        const results = await Promise.all(
-          gridPoints.map(pt =>
-            fetchPrecip(pt.lat, pt.lon).then(data => {
-              loaded++;
-              statusEl.textContent = `${loaded} / ${gridPoints.length} punten geladen…`;
-              return data;
-            })
-          )
-        );
-
-        // Tijdas uit eerste resultaat
-        times      = results[0].time;
-        allPrecips = results.map(r => r.precipitation);
-
-        statusEl.textContent = `${gridPoints.length} punten geladen ✓`;
-        setTimeout(() => statusEl.textContent = '', 3000);
-
-        // UI tonen
-        document.getElementById('control-bar').style.display = 'flex';
-        document.getElementById('chart-panel').style.display = 'block';
-        rainLegend.addTo(map);
-
-        const slider = document.getElementById('time-slider');
-        slider.max   = times.length - 1;
-        slider.value = 0;
-
-        buildChart();
-        renderFrame(0);
-
-      } catch (err) {
-        console.error('Neerslag API fout:', err);
-        document.getElementById('map-time-label').textContent = '❌ Forecast mislukt';
-        statusEl.textContent = err.message;
-      }
-    }
-
-    // ── Event listeners ───────────────────────────────────────────────────────
-    document.getElementById('time-slider').addEventListener('input', (e) => {
-      renderFrame(+e.target.value);
-      buildChart();
-    });
-
-    document.getElementById('btn-prev').addEventListener('click', () => {
-      if (timeIndex > 0) { renderFrame(timeIndex - 1); buildChart(); }
-    });
-
-    document.getElementById('btn-next').addEventListener('click', () => {
-      if (timeIndex < times.length - 1) { renderFrame(timeIndex + 1); buildChart(); }
-    });
-
-    // ── Start ─────────────────────────────────────────────────────────────────
-    loadRainData();
-
-  </script>
 </body>
+</html>
